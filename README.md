@@ -1,0 +1,1 @@
+# universal-clipboard-2.0
