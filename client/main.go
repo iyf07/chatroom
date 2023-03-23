@@ -18,6 +18,7 @@ func main() {
 	var ip = flag.String("ip", "51", "host-ip")
 	var port = flag.String("port", "8080", "port")
 	var name = flag.String("name", "User", "name")
+	var message = flag.String("message", "", "message")
 	flag.Parse()
 
 	// Get client IP address
@@ -42,8 +43,8 @@ func main() {
 	fmt.Println("Connected to the TCP server " + serverIP)
 	fmt.Println("Your IP address is " + clientIP)
 
-	message := fmt.Sprintf("Welcome %s(%s)\n", *name, clientIP)
-	_, err = connection.Write([]byte(message))
+	initialMessage := fmt.Sprintf("%s(%s) joined: %s\n", *name, clientIP, *message)
+	_, err = connection.Write([]byte(initialMessage))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -66,6 +67,7 @@ func read(connection net.Conn) {
 		color.Magenta.Println(message)
 	}
 }
+
 func write(connection net.Conn, name string, clientIP string) {
 	for {
 		reader := bufio.NewReader(os.Stdin)

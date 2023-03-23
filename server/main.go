@@ -11,6 +11,7 @@ import (
 var openConnections = make(map[net.Conn]bool)
 var newConnection = make(chan net.Conn)
 var deadConnection = make(chan net.Conn)
+var initialMessages []string
 
 func main() {
 	// Parse command-line flag
@@ -47,6 +48,7 @@ func main() {
 	for {
 		select {
 		case conn := <-newConnection:
+			broadcastInitialMessages(conn)
 			go broadcastMessage(conn)
 
 		case conn := <-deadConnection:
@@ -60,13 +62,44 @@ func main() {
 	}
 }
 
+func broadcastInitialMessages(conn net.Conn) {
+	// Read new initial message
+	reader := bufio.NewReader(conn)
+	message, err := reader.ReadString('\n')
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Send old initial messages to the current connection
+	for _, initialMessage := range initialMessages {
+		_, err := conn.Write([]byte(initialMessage))
+		if err != nil {
+			break
+		}
+	}
+
+	// Send new initial message to all open connections
+	for openConnection := range openConnections {
+		_, err := openConnection.Write([]byte(message))
+		if err != nil {
+			break
+		}
+	}
+
+	// Store the new initial message
+	initialMessages = append(initialMessages, message)
+}
+
 func broadcastMessage(conn net.Conn) {
 	for {
+		// Read message
 		reader := bufio.NewReader(conn)
 		message, err := reader.ReadString('\n')
 		if err != nil {
 			break
 		}
+
+		// Send message to all open connections
 		for openConnection := range openConnections {
 			_, err := openConnection.Write([]byte(message))
 			if err != nil {
