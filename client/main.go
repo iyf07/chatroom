@@ -15,10 +15,10 @@ import (
 
 func main() {
 	// Parse command-line flag
-	var ip = flag.String("ip", "51", "host-ip")
+	var host = flag.String("host", "86.51", "host-ip")
 	var port = flag.String("port", "8080", "port")
 	var name = flag.String("name", "User", "name")
-	var message = flag.String("message", "", "message")
+	var message = flag.String("message", "Hello", "message")
 	flag.Parse()
 
 	// Get client IP address
@@ -28,7 +28,7 @@ func main() {
 	}
 
 	// Connect to the TCP server
-	serverIP := fmt.Sprintf("192.168.86.%s:%s", *ip, *port)
+	serverIP := fmt.Sprintf("192.168.%s:%s", *host, *port)
 	connection, err := net.Dial("tcp", serverIP)
 	if err != nil {
 		log.Fatal(err)
