@@ -1,6 +1,5 @@
-# universal-clipboard-2.0
-
-This is a Golang program that allows communications among devices in the same local network.
+# chatroom
+This is a Golang app that creates a chatroom and allows communications among devices in the same local network.
 
 ## Usage
 ### `go run ./server/main.go` 
